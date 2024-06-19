@@ -1,7 +1,7 @@
 let results = Std.HashMap();
 
 cons request_headers = Std.HashMap();
-const data = Get('http://google.com', request_headers);
+const data = Std.Get('http://google.com', request_headers);
 
 if (data.body != null) {
   const json_data = Std.Json.Parse(response.body);

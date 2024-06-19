@@ -1,0 +1,16 @@
+# Retriever - Embedded Networking Scripting.
+
+```rs
+let results = Std.HashMap();
+
+cons request_headers = Std.HashMap();
+const data = Std.Get('http://google.com', request_headers);
+
+if (data.body != null) {
+  const json_data = Std.Json.Parse(response.body);
+  results.insert('body', json_data);
+  results.insert('headers', response.headers);
+}
+
+return results;
+```

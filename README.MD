@@ -1,6 +1,6 @@
 # Retriever - Embedded Networking Scripting.
 
-```rs
+```ts
 let results = Std.HashMap();
 
 cons request_headers = Std.HashMap();

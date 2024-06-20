@@ -3,7 +3,7 @@
 ```ts
 let results = Std.HashMap();
 
-cons request_headers = Std.HashMap();
+const request_headers = Std.HashMap();
 const data = Std.Get('http://google.com', request_headers);
 
 if (data.body != null) {

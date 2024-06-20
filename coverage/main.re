@@ -1,5 +1,8 @@
 let results = {};
 
+const name = "James";
+const age = 18  . 675656; // This Works Lmao
+
 const request_headers = {
   "Content-Type": "application/json",
   "Okay": true,

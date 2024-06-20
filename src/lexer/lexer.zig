@@ -1,42 +1,5 @@
 const std = @import("std");
 
-pub const VariableType = enum {
-    STRING,
-    NUMBER,
-    HASHMAP,
-};
-
-pub const Variable = union(VariableType) {
-    BOOLEAN: bool,
-    NUMBER: f64,
-    STRING: []const u8,
-    HASHMAP: std.StringHashMap([]const u8),
-
-    pub fn set(self: *Variable, t: VariableType, value: anyopaque) void {
-        self.* = switch (t) {
-            .BOOLEAN => Variable{ .BOOLEAN = (if (std.mem.eql(u8, value, "true")) true else false) },
-            .NUMBER => Variable{ .NUMBER = value },
-            .STRING => Variable{ .STRING = value },
-            .HASHMAP => Variable{ .HASHMAP = value },
-        };
-    }
-
-    pub fn get(self: Variable) anyopaque {
-        return self;
-    }
-};
-
-pub const BinaryOperator = enum {
-    EQ,
-    NEQ,
-};
-
-pub const BinaryExpression = struct {
-    operator: BinaryOperator,
-    lhs: *const Variable,
-    rhs: *const Variable,
-};
-
 pub const TokenType = enum(u8) {
     // Keywords
     RETURN,
@@ -50,6 +13,7 @@ pub const TokenType = enum(u8) {
     NUMBER_LITERAL,
 
     // Punctuations
+    COMMENT,
     SINGLE_QOUTE,
     DOUBLE_QOUTE,
     SEMICOLON,
@@ -196,7 +160,7 @@ pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
                     }
                     token_count += 1;
                     i -= 1;
-                } else if (is_digit(c)) {
+                } else if (is_digit(c) or c == '.') {
                     const start = i;
                     while (i < source.len and is_digit(source[i])) {
                         i += 1;
@@ -205,6 +169,24 @@ pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
                     tokens[token_count] = Token{ .t = .NUMBER_LITERAL, .value = num_value };
                     token_count += 1;
                     i -= 1;
+                } else if (c == '/') {
+                    // Single line Comment
+                    if (i + 1 < source.len and source[i + 1] == '/') {
+                        // Skip characters until newline or end of source
+                        const start = i;
+                        i += 2; // Skip both '/' characters
+                        while (i < source.len and source[i] != '\n') {
+                            i += 1;
+                        }
+                        // Extract the comment string
+                        const comment_content = source[start..i];
+                        tokens[token_count] = Token{ .t = .COMMENT, .value = comment_content };
+                        token_count += 1;
+                        // Decrement i because the loop increments it once more
+                        i -= 1;
+                    } else {
+                        std.log.info("You attempted to create an in-complete comment", .{});
+                    }
                 }
             },
         }

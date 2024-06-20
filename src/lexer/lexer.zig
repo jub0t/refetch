@@ -7,14 +7,16 @@ pub const VariableType = enum {
 };
 
 pub const Variable = union(VariableType) {
-    STRING: []const u8,
+    BOOLEAN: bool,
     NUMBER: f64,
+    STRING: []const u8,
     HASHMAP: std.StringHashMap([]const u8),
 
     pub fn set(self: *Variable, t: VariableType, value: anyopaque) void {
         self.* = switch (t) {
-            .STRING => Variable{ .STRING = value },
+            .BOOLEAN => Variable{ .BOOLEAN = (if (std.mem.eql(u8, value, "true")) true else false) },
             .NUMBER => Variable{ .NUMBER = value },
+            .STRING => Variable{ .STRING = value },
             .HASHMAP => Variable{ .HASHMAP = value },
         };
     }
@@ -48,7 +50,10 @@ pub const TokenType = enum(u8) {
     NUMBER_LITERAL,
 
     // Punctuations
+    SINGLE_QOUTE,
+    DOUBLE_QOUTE,
     SEMICOLON,
+    COLON,
     LPAREN,
     RPAREN,
     LBRACE,
@@ -107,6 +112,10 @@ pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
             },
             ';' => {
                 tokens[token_count] = Token{ .t = .SEMICOLON, .value = ";" };
+                token_count += 1;
+            },
+            ':' => {
+                tokens[token_count] = Token{ .t = .COLON, .value = ":" };
                 token_count += 1;
             },
             ')' => {

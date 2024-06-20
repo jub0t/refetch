@@ -11,10 +11,12 @@ pub fn main() anyerror!void {
     defer arena.deinit();
     var allocator = arena.allocator();
 
+    var count: u16 = 0;
     const lexed = lexer.Build(code, &allocator);
     if (lexed) |tokens| {
         for (tokens) |token| {
-            std.debug.print("{}\n", .{token});
+            count = count + 1;
+            std.debug.print("[{d}]: {}\n", .{ count, token });
         }
     } else |_| {
         std.debug.print("Lexer Failed...", .{});

@@ -1,10 +1,11 @@
 let results = {};
 
 const request_headers = {
-  'Content-Type': 'application/json',
+  "Content-Type": "application/json",
+  "Okay": true,
 };
 
-const data = Get('http://google.com', request_headers);
+const data = Get("http://google.com", request_headers);
   
 if (data.body != None) {
   const json_data = JsonParse(response.body);

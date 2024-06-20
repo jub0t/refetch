@@ -13,10 +13,10 @@ pub fn read_file_clean(path: []const u8) anyerror![]u8 {
 
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     const allocator = arena.allocator();
-    defer arena.deinit();
 
     const buffer = try allocator.alloc(u8, stats.size);
     try file.reader().readNoEof(buffer);
 
+    errdefer arena.deinit();
     return buffer;
 }

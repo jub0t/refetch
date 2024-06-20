@@ -3,7 +3,7 @@ const lexer = @import("./lexer/lexer.zig");
 const files = @import("./files/files.zig");
 
 pub fn main() anyerror!void {
-    const code = try files.read_file_clean("./coverage/main.rv");
+    const code = try files.read_file_clean("./coverage/main.re");
     std.debug.print("{s}\n\n[------------------ ^ RAW CODE ^ ------------------]\n\n", .{code});
 
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);

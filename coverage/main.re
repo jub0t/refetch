@@ -5,13 +5,13 @@ const request_headers = {
   "Okay": true,
 };
 
-const data = Get("http://google.com", request_headers);
+const data = Get("https://api.chucknorris.io/jokes/random", request_headers);
   
 if (data.body != None) {
   const json_data = JsonParse(response.body);
 
-  results.insert('body', json_data);
-  results.insert('headers', response.headers);
+  results.insert("body", json_data);
+  results.insert("headers", response.headers);
 }
 
 return results;

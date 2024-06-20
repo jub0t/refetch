@@ -1,4 +1,4 @@
-# Retriever - Embedded Networking Scripting.
+# Embedded Networking Scripting.
 
 ```ts
 let results = {};

@@ -71,7 +71,11 @@ pub const TokenType = enum(u8) {
 
 pub const Token = struct {
     t: TokenType,
-    value: []const u8,
+    value: ?[]const u8,
+
+    pub fn setType(self: *Token, newType: TokenType) void {
+        self.t = newType;
+    }
 };
 
 fn is_alpha(c: u8) bool {
@@ -84,6 +88,27 @@ fn is_digit(c: u8) bool {
 
 fn is_alnum(c: u8) bool {
     return is_alpha(c) or is_digit(c);
+}
+
+pub fn Keywording(tokens: []Token) void {
+    for (tokens) |*token| {
+        // We skip the non-identifiers
+        if (token.t != TokenType.IDENTIFIER) continue;
+
+        const value: []const u8 = token.value.?;
+
+        if (std.mem.eql(u8, value, "return")) {
+            token.setType(TokenType.RETURN);
+        }
+
+        if (std.mem.eql(u8, value, "const")) {
+            token.setType(TokenType.CONST);
+        }
+
+        if (std.mem.eql(u8, value, "let")) {
+            token.setType(TokenType.LET);
+        }
+    }
 }
 
 pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
@@ -134,7 +159,7 @@ pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
                 tokens[token_count] = Token{ .t = .EQ, .value = "=" };
                 token_count += 1;
             },
-            '"' => {
+            '"', '\'' => {
                 const start = i + 1;
                 i += 1;
 
@@ -158,6 +183,8 @@ pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
                         tokens[token_count] = Token{ .t = .LET, .value = ident };
                     } else if (std.mem.eql(u8, ident, "const")) {
                         tokens[token_count] = Token{ .t = .CONST, .value = ident };
+                    } else if (std.mem.eql(u8, ident, "if")) {
+                        tokens[token_count] = Token{ .t = .IF, .value = null };
                     } else {
                         tokens[token_count] = Token{ .t = .IDENTIFIER, .value = ident };
                     }
@@ -177,6 +204,9 @@ pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
         }
         i += 1;
     }
+
+    // Some keyword cleaning before we return
+    Keywording(tokens);
 
     return tokens[0..token_count];
 }

@@ -1,5 +1,4 @@
 const std = @import("std");
-const net = @import("./std/net.zig");
 const lexer = @import("./lexer/lexer.zig");
 const files = @import("./files/files.zig");
 
@@ -13,6 +12,7 @@ pub fn main() anyerror!void {
 
     var count: u16 = 0;
     const lexed = lexer.Build(code, &allocator);
+
     if (lexed) |tokens| {
         for (tokens) |token| {
             count = count + 1;

@@ -34,7 +34,8 @@ pub const NetBuilder = struct {
     fn post() !void {}
 };
 
-test "Network Request Test" {
+// Test Code
+test "test_net" {
     const request = NetBuilder.new("http://localhost:3440", NetConfig{
         .method = NetMethods.GET,
         .headers = {},

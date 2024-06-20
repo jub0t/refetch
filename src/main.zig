@@ -1,5 +1,5 @@
 const std = @import("std");
-
+const net = @import("./std/net.zig");
 const lexer = @import("./lexer/lexer.zig");
 const files = @import("./files/files.zig");
 

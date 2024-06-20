@@ -1,4 +1,6 @@
-pub const RequestMethods = enum(u8) {
+const std = @import("std");
+
+pub const NetMethods = enum(u8) {
     GET,
     POST,
 };
@@ -7,18 +9,20 @@ pub const Response = struct {
     // anyopaque for now
     Headers: anyopaque,
     Body: anyopaque,
-
-    time_elapsed: u64,
 };
 
-pub const RequestBuilder = struct {
+pub const NetConfig = struct {
+    method: NetMethods,
+    headers: anyopaque,
+};
+
+pub const NetBuilder = struct {
     const Self = @This();
 
-    pub const method: null!RequestMethods = null;
-
-    pub fn new(url: []const u8) Self {
+    pub fn new(url: []const u8, config: NetConfig) Self {
         return Self{
             .url = url,
+            .method = config.method,
         };
     }
 
@@ -26,6 +30,16 @@ pub const RequestBuilder = struct {
     pub fn process() !void {}
 
     // Request Handlers
-    pub fn get() !void {}
-    pub fn post() !void {}
+    fn get() !void {}
+    fn post() !void {}
 };
+
+test "Network Request Test" {
+    const request = NetBuilder.new("http://localhost:3440", NetConfig{
+        .method = NetMethods.GET,
+        .headers = {},
+    });
+
+    const response = request.process();
+    std.debug.print("{}", response);
+}

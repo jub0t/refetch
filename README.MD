@@ -1,16 +1,20 @@
 # Retriever - Embedded Networking Scripting.
 
 ```ts
-let results = Std.HashMap();
+let results = {};
 
-const request_headers = Std.HashMap();
-const data = Std.Get('http://google.com', request_headers);
+const request_headers = {
+  "Content-Type": "application/json",
+  "Okay": true,
+};
 
-if (data.body != null) {
-  const json_data = Std.Json.Parse(response.body);
+const data = Get("http://google.com", request_headers);
+  
+if (data.body != None) {
+  const json_data = JsonParse(response.body);
+
   results.insert('body', json_data);
   results.insert('headers', response.headers);
 }
 
-return results;
-```
+return results;```

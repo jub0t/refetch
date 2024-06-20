@@ -7,6 +7,17 @@ pub const VariableType = enum {
     HASHMAP,
 };
 
+// This Struct can optimally store many different types of data/variables
+pub const Variable = struct {
+    // Variable? is it necessary?
+    key: []const u8,
+
+    // value: Some_Type_Implementation
+
+    pub fn set() anyerror!void {}
+    pub fn get() anyerror!void {}
+};
+
 pub const TokenType = enum(u8) {
     // Variables
     RETURN,
@@ -15,7 +26,8 @@ pub const TokenType = enum(u8) {
     IF,
 
     // Types
-    VARIABLE,
+    VARIABLE = Variable,
+    OBJECT, // HasMap Fast K,V store zig
 
     // Punctuations
     LPAREN,

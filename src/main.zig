@@ -33,6 +33,6 @@ pub fn main() anyerror!void {
     const lexed = lexer.Build(code, &allocator);
 
     if (lexed) |_| {} else |_| {
-        std.debug.print("Lexer Failed...", .{});
+        std.debug.print("Lexer Failed..., {s}", .{});
     }
 }

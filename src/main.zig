@@ -10,9 +10,13 @@ pub fn main() anyerror!void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     var allocator = arena.allocator();
-    const lexed = lexer.Build(code, &allocator);
 
-    if (lexed) |_| {} else |_| {
+    const lexed = lexer.Build(code, &allocator);
+    if (lexed) |tokens| {
+        for (tokens) |token| {
+            std.debug.print("Token: {}\n", .{token});
+        }
+    } else |_| {
         std.debug.print("Lexer Failed...", .{});
     }
 }

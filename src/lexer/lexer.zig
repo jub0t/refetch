@@ -95,6 +95,12 @@ pub fn Keywording(tokens: []Token) void {
         // We skip the non-identifiers
         if (token.t != TokenType.IDENTIFIER) continue;
 
+        // We might not need this true/false converter later?
+        // Or Maybe we'll need something like this in the parser?
+        // if (token.t == TokenType.STRING_LITERAL and (token.value.?.len == 4 or token.value.?.len == 5)) {
+        //     if (std.mem.eql(u8, token.value.?, "true")) {}
+        // }
+
         const value: []const u8 = token.value.?;
 
         if (std.mem.eql(u8, value, "return")) {

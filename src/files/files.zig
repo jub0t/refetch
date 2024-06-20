@@ -7,6 +7,8 @@ const Files = @This();
 // Takes path and returns full content of the file
 pub fn read_file_clean(path: []const u8) anyerror![]u8 {
     const file = try std.fs.cwd().openFile(path, .{});
+    defer file.close();
+
     const stats = try file.stat();
 
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);

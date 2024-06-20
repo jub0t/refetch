@@ -48,6 +48,7 @@ pub const TokenType = enum(u8) {
     NUMBER_LITERAL,
 
     // Punctuations
+    SEMICOLON,
     LPAREN,
     RPAREN,
     LBRACE,
@@ -67,6 +68,18 @@ pub const Token = struct {
     t: TokenType,
     value: []const u8,
 };
+
+fn is_alpha(c: u8) bool {
+    return (c >= 'a' and c <= 'z') or (c >= 'A' and c <= 'Z') or c == '_';
+}
+
+fn is_digit(c: u8) bool {
+    return c >= '0' and c <= '9';
+}
+
+fn is_alnum(c: u8) bool {
+    return is_alpha(c) or is_digit(c);
+}
 
 pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
     var tokens = try allocator.alloc(Token, source.len);
@@ -92,6 +105,10 @@ pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
                 tokens[token_count] = Token{ .t = .LPAREN, .value = "(" };
                 token_count += 1;
             },
+            ';' => {
+                tokens[token_count] = Token{ .t = .SEMICOLON, .value = ";" };
+                token_count += 1;
+            },
             ')' => {
                 tokens[token_count] = Token{ .t = .RPAREN, .value = ")" };
                 token_count += 1;
@@ -104,22 +121,53 @@ pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
                 tokens[token_count] = Token{ .t = .DOT, .value = "." };
                 token_count += 1;
             },
-            // Add more token recognition as needed
+            '=' => {
+                tokens[token_count] = Token{ .t = .EQ, .value = "=" };
+                token_count += 1;
+            },
+            '"' => {
+                const start = i + 1;
+                i += 1;
+
+                while (i < source.len and source[i] != '"') {
+                    i += 1;
+                }
+
+                if (i >= source.len) break;
+                const str_value = source[start..i];
+                tokens[token_count] = Token{ .t = .STRING_LITERAL, .value = str_value };
+                token_count += 1;
+            },
             else => {
-                // Handle identifiers, keywords, and other tokens
+                if (is_alpha(c)) {
+                    const start = i;
+                    while (i < source.len and is_alnum(source[i])) {
+                        i += 1;
+                    }
+                    const ident = source[start..i];
+                    if (std.mem.eql(u8, ident, "let")) {
+                        tokens[token_count] = Token{ .t = .LET, .value = ident };
+                    } else if (std.mem.eql(u8, ident, "const")) {
+                        tokens[token_count] = Token{ .t = .CONST, .value = ident };
+                    } else {
+                        tokens[token_count] = Token{ .t = .IDENTIFIER, .value = ident };
+                    }
+                    token_count += 1;
+                    i -= 1;
+                } else if (is_digit(c)) {
+                    const start = i;
+                    while (i < source.len and is_digit(source[i])) {
+                        i += 1;
+                    }
+                    const num_value = source[start..i];
+                    tokens[token_count] = Token{ .t = .NUMBER_LITERAL, .value = num_value };
+                    token_count += 1;
+                    i -= 1;
+                }
             },
         }
         i += 1;
     }
 
     return tokens[0..token_count];
-}
-
-pub fn main() anyerror!void {
-    const allocator = std.heap.page_allocator;
-    const source = "let results = {};"; // Example source code
-    const tokens = try Build(source, allocator);
-    for (tokens) |token| {
-        std.debug.print("Token: {}\n", .{token});
-    }
 }

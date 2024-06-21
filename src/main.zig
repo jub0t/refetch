@@ -2,6 +2,7 @@ const std = @import("std");
 const Recode = @import("./lexer/recode.zig").Recode;
 
 const lexer = @import("./lexer/lexer.zig");
+const parser = @import("./parser/parser.zig");
 const files = @import("./files/files.zig");
 
 pub fn main() anyerror!void {
@@ -27,6 +28,15 @@ pub fn main() anyerror!void {
             if (token.value) |val| {
                 std.debug.print("[{d}]: {} => {s}\n", .{ count, token.t, val });
             }
+        }
+
+        // var gp = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+        // var parser_allocator = gp.allocator();
+
+        const parsed_data = try parser.Parse(tokens);
+
+        for (parsed_data) |_| {
+            // std.debug.print("{}", .{node.type});
         }
 
         std.debug.print("\n\n[------------------ ^ TOKENS ^ ------------------]\n\n", .{});

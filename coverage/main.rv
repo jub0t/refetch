@@ -9,7 +9,7 @@ const request_headers = {
 };
 
 const data = Get("https://api.chucknorris.io/jokes/random", request_headers);
-  
+
 if (data.body != None) {
   const json_data = JsonParse(response.body);
 

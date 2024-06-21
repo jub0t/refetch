@@ -22,9 +22,9 @@ pub const Variable = union(VariableType) {
     pub fn set(self: *Variable, t: VariableType, value: anyopaque) void {
         self.* = switch (t) {
             .BOOLEAN => Variable{ .BOOLEAN = (if (std.mem.eql(u8, value, "true")) true else false) },
-            .NUMBER => Variable{ .NUMBER = value },
             .STRING => Variable{ .STRING = value },
             .HASHMAP => Variable{ .HASHMAP = value },
+            .NUMBER => Variable{ .NUMBER = value },
         };
     }
 

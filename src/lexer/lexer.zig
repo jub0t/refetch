@@ -82,12 +82,14 @@ pub fn Keywording(tokens: []Token) void {
 }
 
 pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
-    var tokens = try allocator.alloc(Token, source.len);
+    const source_len = source.len;
+    var tokens = try allocator.alloc(Token, source_len);
     var token_count: usize = 0;
-
     var i: usize = 0;
-    while (i < source.len) {
+
+    while (i < source_len) {
         const c = source[i];
+
         switch (c) {
             ' ' => {},
             '\n' => {},
@@ -133,11 +135,11 @@ pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
                 const start = i + 1;
                 i += 1;
 
-                while (i < source.len and source[i] != '"') {
+                while (i < source_len and source[i] != '"') {
                     i += 1;
                 }
 
-                if (i >= source.len) break;
+                if (i >= source_len) break;
                 const str_value = source[start..i];
                 tokens[token_count] = Token{ .t = .STRING_LITERAL, .value = str_value };
                 token_count += 1;
@@ -145,9 +147,11 @@ pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
             else => {
                 if (is_alpha(c)) {
                     const start = i;
-                    while (i < source.len and is_alnum(source[i])) {
+
+                    while (i < source_len and is_alnum(source[i])) {
                         i += 1;
                     }
+
                     const ident = source[start..i];
                     if (std.mem.eql(u8, ident, "let")) {
                         tokens[token_count] = Token{ .t = .LET, .value = ident };
@@ -158,24 +162,26 @@ pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
                     } else {
                         tokens[token_count] = Token{ .t = .IDENTIFIER, .value = ident };
                     }
+
                     token_count += 1;
                     i -= 1;
                 } else if (is_digit(c) or c == '.') {
                     const start = i;
-                    while (i < source.len and is_digit(source[i])) {
+                    while (i < source_len and is_digit(source[i])) {
                         i += 1;
                     }
+
                     const num_value = source[start..i];
                     tokens[token_count] = Token{ .t = .NUMBER_LITERAL, .value = num_value };
                     token_count += 1;
                     i -= 1;
                 } else if (c == '/') {
                     // Single line Comment
-                    if (i + 1 < source.len and source[i + 1] == '/') {
+                    if (i + 1 < source_len and source[i + 1] == '/') {
                         // Skip characters until newline or end of source
                         const start = i;
                         i += 2; // Skip both '/' characters
-                        while (i < source.len and source[i] != '\n') {
+                        while (i < source_len and source[i] != '\n') {
                             i += 1;
                         }
                         // Extract the comment string

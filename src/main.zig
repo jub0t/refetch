@@ -23,7 +23,10 @@ pub fn main() anyerror!void {
     if (lexed) |tokens| {
         for (tokens) |token| {
             count = count + 1;
-            std.debug.print("[{d}]: {}\n", .{ count, token });
+
+            if (token.value) |val| {
+                std.debug.print("[{d}]: {} => {s}\n", .{ count, token.t, val });
+            }
         }
 
         std.debug.print("\n\n[------------------ ^ TOKENS ^ ------------------]\n\n", .{});

@@ -5,7 +5,12 @@ const lexer = @import("./lexer/lexer.zig");
 const files = @import("./files/files.zig");
 
 pub fn main() anyerror!void {
-    const code = try files.read_file_clean("./coverage/main.rv");
+    var args = std.process.args();
+    const m = args.next().?; // Skip the binary path, first arg
+    std.debug.print("{s}", .{m});
+
+    const file_path = args.next().?;
+    const code = try files.read_file_clean(file_path);
     std.debug.print("{s}\n\n[------------------ ^ RAW CODE ^ ------------------]\n\n", .{code});
 
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
@@ -36,4 +41,8 @@ pub fn main() anyerror!void {
 
     //     if (try stdin.readUntilDelimiterOrEof(buf[0..], '\n')) |_| {} else {}
     // }
+}
+
+test "main_tests" {
+    std.debug.print("Testing...", .{});
 }

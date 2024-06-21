@@ -1,4 +1,5 @@
 const std = @import("std");
+const Recode = @import("./lexer/recode.zig").Recode;
 
 const lexer = @import("./lexer/lexer.zig");
 const files = @import("./files/files.zig");
@@ -19,15 +20,20 @@ pub fn main() anyerror!void {
             count = count + 1;
             std.debug.print("[{d}]: {}\n", .{ count, token });
         }
+
+        std.debug.print("\n\n[------------------ ^ TOKENS ^ ------------------]\n\n", .{});
+
+        // const re_code = try Recode(tokens);
+        // std.debug.print("{s}", .{re_code});
     } else |_| {
         std.debug.print("Lexer Failed...", .{});
     }
 
     // Stop it from dying early
-    while (true) {
-        const stdin = std.io.getStdIn().reader();
-        var buf: [10]u8 = undefined;
+    // while (true) {
+    //     const stdin = std.io.getStdIn().reader();
+    //     var buf: [10]u8 = undefined;
 
-        if (try stdin.readUntilDelimiterOrEof(buf[0..], '\n')) |_| {} else {}
-    }
+    //     if (try stdin.readUntilDelimiterOrEof(buf[0..], '\n')) |_| {} else {}
+    // }
 }

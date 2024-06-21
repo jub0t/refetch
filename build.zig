@@ -15,7 +15,7 @@ pub fn build(b: *std.Build) void {
     // set a preferred release mode, allowing the user to decide how to optimize.
     const optimize = b.standardOptimizeOption(.{
         // This field is custom, I prefer Small release
-        .preferred_optimize_mode = std.builtin.Mode.ReleaseSmall,
+        // .preferred_optimize_mode = std.builtin.Mode.ReleaseSmall,
     });
 
     const lib = b.addStaticLibrary(.{

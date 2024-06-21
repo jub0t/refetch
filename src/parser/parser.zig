@@ -2,9 +2,9 @@ const Token = @import("../lexer/lexer.zig").Token;
 const std = @import("std");
 
 pub const InstructionType = enum {
-    FunctionDefine,
-    FunctionCall,
-    VariableDefine,
+    FuncCall,
+    FuncDefine,
+    IdentAssign, // Identifier Assign
 };
 
 pub const Operators = enum {
@@ -12,8 +12,17 @@ pub const Operators = enum {
     EQADD, // +=
 };
 
+pub const Vunion = union {
+    Boolean: bool,
+    String: []u8,
+    Number: f64,
+};
+
 pub const NodeAst = struct {
+    value: Vunion,
     type: InstructionType,
+
+    operator: Operators,
 
     // Recursive stupidity
     condition: *NodeAst,

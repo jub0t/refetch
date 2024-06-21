@@ -37,7 +37,9 @@ pub fn Parse(tokens: []Token) anyerror![]NodeAst {
     const nodes = try allocator.alloc(NodeAst, 1024);
 
     for (tokens) |token| {
-        std.debug.print("{}\n\n", .{token.t});
+        if (token.value == null) {
+            continue;
+        }
     }
 
     return nodes;

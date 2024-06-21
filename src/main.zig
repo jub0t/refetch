@@ -7,10 +7,33 @@ const files = @import("./files/files.zig");
 
 pub fn main() anyerror!void {
     var args = std.process.args();
-    const m = args.next().?; // Skip the binary path, first arg
-    std.debug.print("{s}", .{m});
+    const farg = args.next(); // Skip the binary path, first arg
+    if (farg == null) {
+        return;
+    }
 
     const file_path = args.next().?;
+    const code = try files.read_file_clean(file_path);
+
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    var allocator = arena.allocator();
+
+    const lexed = lexer.Build(code, &allocator);
+
+    if (lexed) |tokens| {
+        const parsed_data = try parser.Parse(tokens);
+
+        for (parsed_data) |_| {
+            // std.debug.print("{}", .{node.type});
+        }
+    } else |_| {
+        std.debug.print("Lexer Failed...", .{});
+    }
+}
+
+test "main_tests" {
+    const file_path = "./coverage/main.rv";
     const code = try files.read_file_clean(file_path);
     std.debug.print("{s}\n\n[------------------ ^ RAW CODE ^ ------------------]\n\n", .{code});
 
@@ -46,16 +69,4 @@ pub fn main() anyerror!void {
     } else |_| {
         std.debug.print("Lexer Failed...", .{});
     }
-
-    // Stop it from dying early
-    // while (true) {
-    //     const stdin = std.io.getStdIn().reader();
-    //     var buf: [10]u8 = undefined;
-
-    //     if (try stdin.readUntilDelimiterOrEof(buf[0..], '\n')) |_| {} else {}
-    // }
-}
-
-test "main_tests" {
-    std.debug.print("Testing...", .{});
 }

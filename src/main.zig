@@ -19,14 +19,20 @@ pub fn main() anyerror!void {
     defer arena.deinit();
     var allocator = arena.allocator();
 
+    const lexer_start = std.time.microTimestamp();
     const lexed = lexer.Build(code, &allocator);
 
     if (lexed) |tokens| {
+        std.debug.print("[LEXER]: Tokenized In {}μs\n", .{(std.time.microTimestamp() - lexer_start)});
+
+        const parser_start = std.time.microTimestamp();
         const parsed_data = try parser.Parse(tokens);
 
         for (parsed_data) |_| {
             // std.debug.print("{}", .{node.type});
         }
+
+        std.debug.print("[PARSER]: Parsed In {}μs\n", .{(std.time.microTimestamp() - parser_start)});
     } else |_| {
         std.debug.print("Lexer Failed...", .{});
     }

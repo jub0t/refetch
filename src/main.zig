@@ -29,7 +29,7 @@ pub fn main() anyerror!void {
         std.debug.print("[PARSER]: Parsed {} Nodes In {}μs\n", .{ ast_nodes.len, (std.time.microTimestamp() - parser_start) });
 
         // Interpret
-        interpreter.Interpret(ast_nodes);
+        try interpreter.Interpret(ast_nodes);
     } else |_| {
         std.debug.print("Lexer Failed...", .{});
     }

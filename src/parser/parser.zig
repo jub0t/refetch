@@ -3,35 +3,74 @@
 const Token = @import("../lexer/lexer.zig").Token;
 const std = @import("std");
 
+pub const VunionTypes = enum(u8) {
+    String,
+    Number,
+    Boolean,
+    Null,
+};
+
+// std.{func_name}();
+pub const StandardFunction = enum {
+    PrintLine, // prinlnt() function
+};
+
 pub const InstructionType = enum {
+    StandardFunction,
     FuncCall,
     FuncDefine,
     IdentAssign, // Identifier Assign
 };
 
-pub const Operators = enum {
+pub const Operators = enum(u4) {
     EQUALS,
     EQADD, // +=
 };
 
-pub const Vunion = union(enum) {
+pub const Vunion = struct {
     const Self = @This();
+    pub var data: Data = Data.new();
 
-    Boolean: ?bool,
-    String: ?[]u8,
-    Number: ?f64,
-    Null: ?bool,
+    pub fn new() Self {
+        const v = Self{};
 
-    pub fn to_string(me: Self) []const u8 {
-        return me.String;
+        return v;
     }
+
+    pub fn value(self: *Self) Data {
+        return self.data;
+    }
+
+    const Data = union(enum) {
+        const Me = @This();
+
+        Boolean: ?bool,
+        String: ?[]u8,
+        Number: ?f64,
+        Null: ?bool,
+
+        pub fn new() Me {
+            return Me{ .Null = false };
+        }
+
+        pub fn to_string(me: *Me) []const u8 {
+            return me.String;
+        }
+
+        pub fn increment_by(me: *Me, amount: u32) void {
+            me.Number += amount;
+        }
+    };
 };
 
 pub const NodeAst = struct {
     const Self = @This();
 
-    value: ?Vunion,
     type: InstructionType,
+    name: ?[]const u8,
+
+    value: ?Vunion,
+    v_type: ?VunionTypes,
 
     // Binary Operation.
     operator: ?Operators,
@@ -46,11 +85,13 @@ pub const NodeAst = struct {
     pub fn new(itype: InstructionType) Self {
         const node = Self{
             .type = itype,
+            .name = null,
             .condition = null,
             .value = null,
             .lhs = null,
             .rhs = null,
             .otherwise = null,
+            .v_type = null,
             .operator = null,
             .then = null,
         };
@@ -63,7 +104,7 @@ pub const NodeAst = struct {
     }
 
     pub fn set_value_null(me: *NodeAst) void {
-        me.value = Vunion{ .Null = false };
+        me.value = Vunion.new();
     }
 
     pub fn get_value(me: *NodeAst) ?Vunion {
@@ -75,15 +116,17 @@ pub fn Parse(tokens: []Token) anyerror![]NodeAst {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     var allocator = arena.allocator();
 
-    const nodes = try allocator.alloc(NodeAst, 1024);
+    const nreserve = 64 * @sizeOf(NodeAst);
+    var nodes = try allocator.alloc(NodeAst, nreserve);
     var n_idx: usize = 0; // Node Index;
 
     var node = NodeAst.new(InstructionType.IdentAssign);
     node.set_value_null();
-    node.set_value(Vunion{ .Null = false });
+    node.set_value(Vunion.new());
 
     const val = node.get_value();
-    std.debug.print("Vunion {}\n", .{val.?});
+    if (val) |_| {}
+    // std.debug.print("{}\n", .{val.?});
 
     nodes[n_idx] = node;
     n_idx += 1;
@@ -93,6 +136,8 @@ pub fn Parse(tokens: []Token) anyerror![]NodeAst {
             continue;
         }
     }
+
+    nodes.len = n_idx + 1; // Remove unused memory
 
     return nodes;
 }

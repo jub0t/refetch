@@ -1,16 +1,15 @@
 const std = @import("std");
+
 const Recode = @import("./lexer/recode.zig").Recode;
+const files = @import("./files/files.zig");
 
 const lexer = @import("./lexer/lexer.zig");
 const parser = @import("./parser/parser.zig");
-const files = @import("./files/files.zig");
+const interpreter = @import("./interpreter/interpreter.zig");
 
 pub fn main() anyerror!void {
     var args = std.process.args();
-    const farg = args.next(); // Skip the binary path, first arg
-    if (farg == null) {
-        return;
-    }
+    if (args.next() == null) return; // Skip first argument
 
     const file_path = args.next().?;
     const code = try files.read_file_clean(file_path);
@@ -23,16 +22,14 @@ pub fn main() anyerror!void {
     const lexed = lexer.Build(code, &allocator);
 
     if (lexed) |tokens| {
-        std.debug.print("[LEXER]: Tokenized In {}μs\n", .{(std.time.microTimestamp() - lexer_start)});
+        std.debug.print("[LEXER]: Tokenized {} Tokens In {}μs\n", .{ tokens.len, (std.time.microTimestamp() - lexer_start) });
 
         const parser_start = std.time.microTimestamp();
-        const parsed_data = try parser.Parse(tokens);
+        const ast_nodes = try parser.Parse(tokens);
+        std.debug.print("[PARSER]: Parsed {} Nodes In {}μs\n", .{ ast_nodes.len, (std.time.microTimestamp() - parser_start) });
 
-        for (parsed_data) |_| {
-            // std.debug.print("{}", .{node.type});
-        }
-
-        std.debug.print("[PARSER]: Parsed In {}μs\n", .{(std.time.microTimestamp() - parser_start)});
+        // Interpret
+        interpreter.Interpret(ast_nodes);
     } else |_| {
         std.debug.print("Lexer Failed...", .{});
     }
@@ -63,7 +60,6 @@ test "main_tests" {
         // var parser_allocator = gp.allocator();
 
         const parsed_data = try parser.Parse(tokens);
-
         for (parsed_data) |_| {
             // std.debug.print("{}", .{node.type});
         }

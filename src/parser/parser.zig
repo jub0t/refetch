@@ -10,16 +10,13 @@ pub const VunionTypes = enum(u8) {
     Null,
 };
 
-// std.{func_name}();
-pub const StandardFunction = enum {
-    PrintLine, // prinlnt() function
-};
-
 pub const InstructionType = enum {
     StandardFunction,
     FuncCall,
     FuncDefine,
     IdentAssign, // Identifier Assign
+
+    PrintLine, // prinlnt() function
 };
 
 pub const Operators = enum(u4) {

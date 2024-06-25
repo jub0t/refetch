@@ -11,7 +11,7 @@ pub const VunionTypes = enum(u8) {
 };
 
 pub const InstructionType = enum {
-    StandardFunction,
+    StdCall,
     FuncCall,
     FuncDefine,
     IdentAssign, // Identifier Assign
@@ -26,16 +26,37 @@ pub const Operators = enum(u4) {
 
 pub const Vunion = struct {
     const Self = @This();
-    pub var data: Data = Data.new();
+
+    data: Data,
+    v_type: VunionTypes,
 
     pub fn new() Self {
-        const v = Self{};
-
-        return v;
+        return Self{
+            .v_type = VunionTypes.Null,
+            .data = Data.new(),
+        };
     }
 
-    pub fn value(self: *Self) Data {
-        return self.data;
+    pub fn to_string(self: *Self) []u8 {
+        return self.data.String.?;
+    }
+
+    pub fn to_number(self: *Self) f64 {
+        return self.data.Number;
+    }
+
+    pub fn to_bool(self: *Self) bool {
+        return self.data.Boolean;
+    }
+
+    pub fn append_amount(self: *Self, amount: i32) void {
+        self.data.Number += amount;
+    }
+
+    pub fn undef(
+        // self: *Self,
+    ) void {
+        // self.v_type = VunionTypes.Null;
     }
 
     const Data = union(enum) {
@@ -48,14 +69,6 @@ pub const Vunion = struct {
 
         pub fn new() Me {
             return Me{ .Null = false };
-        }
-
-        pub fn to_string(me: *Me) []const u8 {
-            return me.String;
-        }
-
-        pub fn increment_by(me: *Me, amount: u32) void {
-            me.Number += amount;
         }
     };
 };

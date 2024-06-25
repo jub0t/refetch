@@ -8,7 +8,8 @@ const request_headers = {
   "Okay": true,
 };
 
-const data = Get("https://api.chucknorris.io/jokes/random", request_headers);
+const data = GET("https://api.chucknorris.io/jokes/random", request_headers);
+println(data);
 
 if (data.body != None) {
   const json_data = JsonParse(response.body);

@@ -158,7 +158,7 @@ pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
                     } else if (std.mem.eql(u8, ident, "const")) {
                         tokens[token_count] = Token{ .t = .CONST, .value = ident };
                     } else if (std.mem.eql(u8, ident, "if")) {
-                        tokens[token_count] = Token{ .t = .IF, .value = null };
+                        tokens[token_count] = Token{ .t = .IF, .value = ident };
                     } else {
                         tokens[token_count] = Token{ .t = .IDENTIFIER, .value = ident };
                     }
@@ -196,6 +196,7 @@ pub fn Build(source: []const u8, allocator: *std.mem.Allocator) ![]Token {
                 }
             },
         }
+
         i += 1;
     }
 
